@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "lenme-django-project"
+version = "0.1.0"
+description = "a Django REST project for Lenme, a peer-to-peer lending platform"
+authors = ["Mohamed Tarek <m96tarek@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0"
+djangorestframework = "^3.14.0"
+django-stubs = "^4.2.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
