@@ -2,4 +2,4 @@ __pycache__
 /.venv
 *.env
 __pycache__/
-*.py[cod]
+/lenme_django/lenme_django/__pycache__/settings.cpython-311.pyc
