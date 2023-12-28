@@ -16,9 +16,9 @@ class Loan(models.Model):
     investor = models.ForeignKey(
         Investor, on_delete=models.SET_NULL, db_index=True, blank=True, null=True
     )
-    amount = models.FloatField(blank=False, default=0.0)
-    period = models.IntegerField(blank=False, default=0)
-    interest_rate = models.FloatField(blank=True, null=True)
+    amount = models.IntegerField(null=False, default=0)
+    period = models.IntegerField(null=False, default=6)
+    interest_rate = models.FloatField(null=True, default=15)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
     paid_amount = models.FloatField(default=0.0)
 
@@ -46,8 +46,12 @@ class Offer(models.Model):
     loan = models.ForeignKey(
         Loan, on_delete=models.CASCADE, db_index=True, blank=True, null=True
     )
-    interest_rate = models.FloatField(blank=False, default=0.0)
+    interest_rate = models.FloatField(null=False, default=15)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Call the "real" save() method
+        PendingOffers.objects.create(offers=self)
 
     def __str__(self):
         return (
@@ -57,3 +61,10 @@ class Offer(models.Model):
             f"Interest Rate: {self.interest_rate} \n"
             f"Status: {self.status}"
         )
+
+
+class PendingOffers(models.Model):
+    offers = models.ForeignKey(Offer, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"Offers: {self.offers}"
