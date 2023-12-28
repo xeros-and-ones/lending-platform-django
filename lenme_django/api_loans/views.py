@@ -3,48 +3,62 @@ from api_investors.models import Investor
 from rest_framework.response import Response
 from .models import Loan, Offer
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from .serializers import LoanSerializer, OfferSerializer
 
 
-@api_view(["POST"])
-def loan_request(request):
-    if request.method == "POST":
-        data = request.POST
-        if "amount" and "period" in data:
-            borrower = Borrower.objects.get(id=data["borrower"])
-            req = Loan(
-                borrower=borrower, amount=float(data["amount"]), period=data["period"]
-            )
-            req.save()
+class LoanRequestView(APIView):
+    serializer_class = LoanSerializer
+
+    def post(self, request):
+        borrower = Borrower.objects.get(id=request.data["borrower"])
+        serializer = self.serializer_class(
+            data={
+                "borrower": borrower.id,
+                "amount": request.data["amount"],
+                "period": request.data["period"],
+            }
+        )
+        if serializer.is_valid():
+            loan = serializer.save()
             return Response(
                 {"Message": "Your loan request has been successfully made."}
             )
         else:
-            return Response({"Message": "Missing one of the amount or period field."})
-    else:
-        return Response({"Message": "Sorry not the expected HTTP Method."})
+            return Response(serializer.errors, status=400)
 
 
-@api_view(["POST"])
-def offer_request(request):
-    if request.method == "POST":
-        data = request.POST
-        if "interest_rate" in data:
-            borrower = Borrower.objects.get(id=data["borrower"])
-            investor = Investor.objects.get(id=data["investor"])
-            loan = Loan.objects.get(id=data["loan"])
-            req = Offer(
-                borrower=borrower,
-                investor=investor,
-                loan=loan,
-                interest_rate=float(data["interest_rate"]),
-            )
-            req.save()
-            return Response(
-                {
-                    "Message": "Your offer to the borrower has been successfully submitted."
-                }
-            )
+class OfferRequestView(APIView):
+    serializer_class = OfferSerializer
+
+    def get_queryset(self):
+        return Loan.objects.filter(status="PENDING")
+
+    def post(self, request, *args, **kwargs):
+        loan = self.get_queryset().get(id=request.data["loan"])
+        print(loan.status)
+        investor = Investor.objects.get(id=request.data["investor"])
+        if investor.balance != 0.0:
+            if investor.balance >= (loan.amount + 3.75):
+                offer = Offer(
+                    borrower=loan.borrower,
+                    investor=investor,
+                    loan=loan,
+                    interest_rate=loan.interest_rate,
+                )
+                offer.save()
+                return Response(
+                    {
+                        "Message": "Your offer to the borrower has been successfully submitted."
+                    },
+                    status=200,
+                )
+            else:
+                return Response(
+                    {
+                        "Message": "unfortunately the loan will not be funded due to insufficient balance."
+                    },
+                    status=400,
+                )
         else:
-            return Response({"Message": "Missing the interest_rate field."})
-    else:
-        return Response({"Message": "Sorry not the expected HTTP Method."})
+            return Response({"Message": "Your Fund seems to be very low"})
