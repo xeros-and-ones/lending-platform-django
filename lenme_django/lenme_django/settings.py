@@ -34,16 +34,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "rest_framework",
-    "api_borrowers.apps.ApiBorrowersConfig",
-    "api_investors.apps.ApiInvestorsConfig",
-    "api_loans.apps.ApiLoansConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_swagger",
+    "drf_yasg",
+    "api_borrowers.apps.ApiBorrowersConfig",
+    "api_investors.apps.ApiInvestorsConfig",
+    "api_loans.apps.ApiLoansConfig",
+    "api_payment.apps.ApiPaymentConfig",
 ]
 
 MIDDLEWARE = [

@@ -8,11 +8,18 @@ from .models import Borrower
 from api_loans.models import Loan, Offer, PendingOffers
 from api_loans.serializers import PendingOfferSerializer
 from api_investors.models import Investor
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 class CreateBorrowerView(APIView):
     serializer_class = BorrowerSerializer
 
+    @swagger_auto_schema(
+        operation_description="Create Borrower",
+        request_body=BorrowerSerializer,
+        responses={200: "Borrower Created successfully", 400: "Invalid input"},
+    )
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -29,7 +36,11 @@ class CreateBorrowerView(APIView):
 class ViewBorrowersView(APIView):
     serializer_class = BorrowerSerializer
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
+        """
+        View A List Of Borrowers
+        """
+
         borrowers = Borrower.objects.all()
         serializer = self.serializer_class(borrowers, many=True)
         return Response({"Borrowers": serializer.data})
@@ -48,16 +59,16 @@ class AcceptOfferView(APIView):
         borrower_id = self.request.data.get("borrower_id")
         return Offer.objects.filter(borrower_id=borrower_id, status="PENDING")
 
-    def post(self, request):
+    @swagger_auto_schema(
+        operation_description="Accept A Lender's offer",
+        request_body=PendingOfferSerializer,
+        responses={200: "Offer Acceppted Successfully", 400: "Invalid input"},
+    )
+    def post(self, request, *args, **kwargs):
         print(request.data)
         req = request.data.get("offers")
         print(req)
         offer = Offer.objects.get(id=req)
-        delete_pending_offer = PendingOffers.objects.get(offers=offer)
-        delete_pending_offer.delete()
-        delete_pending_offer.save()
-        rm_offer_from_pending = PendingOffers.objects.get(offers_id=req)
-        rm_offer_from_pending.delete()
         offer.status = "Accepted"
         offer.save()
         loan = Loan.objects.filter(status="PENDING").get(borrower_id=offer.borrower)
@@ -68,6 +79,8 @@ class AcceptOfferView(APIView):
         investor_balance = Investor.objects.get(id=offer.investor.id)
         investor_balance.balance -= loan.amount + 3.75
         investor_balance.save()
+        delete_pending_offer = PendingOffers.objects.get(offers=offer)
+        delete_pending_offer.delete()
         final_amount_per_month = interest_calculator(loan.amount)
         return Response(
             {

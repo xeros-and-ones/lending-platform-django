@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from api_borrowers.models import Borrower
 from api_investors.models import Investor
 
@@ -49,9 +49,15 @@ class Offer(models.Model):
     interest_rate = models.FloatField(null=False, default=15)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Call the "real" save() method
-        PendingOffers.objects.create(offers=self)
+    # def save(self, *args, **kwargs):
+    #     # Check if the instance is being updated
+    #     if self.pk:
+    #         old_instance = Offer.objects.get(pk=self.pk)
+    #         if old_instance.status == "PENDING" and self.status == "ACCEPTED":
+    #             with transaction.atomic():
+    #                 PendingOffers.objects.get(offers=self).delete()
+
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return (
