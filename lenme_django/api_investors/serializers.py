@@ -5,4 +5,4 @@ from .models import Investor
 class InvestorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investor
-        fields = ["id", "name", "balance"]
+        fields = ["name", "balance"]

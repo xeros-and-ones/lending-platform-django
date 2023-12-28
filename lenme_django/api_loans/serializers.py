@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Loan, Offer
+from .models import Loan, Offer, PendingOffers
 
 
 class LoanSerializer(serializers.ModelSerializer):
@@ -7,16 +7,19 @@ class LoanSerializer(serializers.ModelSerializer):
         model = Loan
         fields = [
             "borrower",
-            "investor",
             "amount",
             "period",
-            "interest_rate",
-            "status",
-            "paid_amount",
         ]
 
 
 class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
-        fields = ["borrower", "investor", "loan", "interest_rate", "status"]
+        fields = ["loan", "borrower", "investor", "interest_rate", "status"]
+        read_only_fields = ["borrower", "interest_rate", "status"]
+
+
+class PendingOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PendingOffers
+        fields = ["offers"]
