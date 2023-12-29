@@ -3,7 +3,7 @@ name = "lenme-django-project"
 version = "0.1.0"
 description = "a Django REST project for Lenme, a peer-to-peer lending platform"
 authors = ["Mohamed Tarek <m96tarek@gmail.com>"]
-readme = "README.md"
+readme = "README.org"
 
 [tool.poetry.dependencies]
 python = "^3.11"
