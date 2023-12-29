@@ -1,3 +1,4 @@
+from rest_framework import status
 from api_borrowers.models import Borrower
 from api_investors.models import Investor
 from rest_framework.response import Response
@@ -14,7 +15,7 @@ class LoanRequestView(APIView):
     @swagger_auto_schema(
         operation_description="Submit a loan request",
         request_body=LoanSerializer,
-        responses={200: "Loan request submitted successfully", 400: "Invalid input"},
+        responses={201: "Loan request submitted successfully", 400: "Invalid input"},
     )
     def post(self, request, *args, **kwargs):
         borrower = Borrower.objects.get(id=request.data["borrower"])
@@ -26,19 +27,20 @@ class LoanRequestView(APIView):
             }
         )
         if serializer.is_valid():
-            loan = serializer.save()
+            serializer.save()
             return Response(
-                {"Message": "Your loan request has been successfully made."}
+                {
+                    "Message": "Your loan request has been successfully made.",
+                    "loan": serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
             )
         else:
-            return Response(serializer.errors, status=400)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OfferRequestView(APIView):
     serializer_class = OfferSerializer
-
-    def get_queryset(self):
-        return Loan.objects.filter(status="PENDING")
 
     @swagger_auto_schema(
         operation_description="Submit an Offer to the borrower",
@@ -46,8 +48,7 @@ class OfferRequestView(APIView):
         responses={200: "Offer submitted successfully", 400: "Invalid input"},
     )
     def post(self, request, *args, **kwargs):
-        loan = self.get_queryset().get(id=request.data["loan"])
-        print(loan.status)
+        loan = Loan.objects.get(id=request.data["loan"])
         investor = Investor.objects.get(id=request.data["investor"])
         if investor.balance != 0.0:
             if investor.balance >= (loan.amount + 3.75):
@@ -60,18 +61,23 @@ class OfferRequestView(APIView):
                 offer.save()
                 pending_offer = PendingOffers.objects.create(offers=offer)
                 pending_offer.save()
+                offer_data = self.serializer_class(offer)
                 return Response(
                     {
-                        "Message": "Your offer to the borrower has been successfully submitted."
+                        "Message": "Your offer to the borrower has been successfully submitted.",
+                        "offer": offer_data.data,
                     },
-                    status=200,
+                    status=status.HTTP_201_CREATED,
                 )
             else:
                 return Response(
                     {
                         "Message": "unfortunately the loan will not be funded due to insufficient balance."
                     },
-                    status=400,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
-            return Response({"Message": "Your Fund seems to be very low"})
+            return Response(
+                {"Message": "Your Fund seems to be very low"},
+                status=status.HTTP_403_FORBIDDEN,
+            )

@@ -85,5 +85,6 @@ class AcceptOfferView(APIView):
         return Response(
             {
                 "Message": f"success {loan.amount} , {loan.period}. You will be paying ${final_amount_per_month/ loan.period} every month for {loan.period} Month(s)."
-            }
+            },
+            status=status.HTTP_201_CREATED,
         )
