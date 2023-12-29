@@ -19,7 +19,52 @@ One of the borrowers has submitted a loan request for $5,000 to be repaid over 6
 -
 
 ** instructions:
-First, we need to clone this repo locally:
+*** First, we need to clone this repo locally:
 #+begin_src sh
-git clone
+git clone https://github.com/xeros-and-ones/lending-platform-django.git
+#+end_src
+
+*** we ~cd~ into the clone directory
+
+*** init a virtual environment in the root project directory where the =requirements.txt= exists
+**** for poetry:
+Simply Run
+#+begin_src shell
+poetry install
+#+end_src
+
+**** or you can use python's venv:
+#+begin_src shell
+python -m venv .venv
+#+end_src
+
+*** installing dependecies:
+poetry users already have installed the dependecies via the =pyproject.toml=
+
+**** for venv users, the next step, is to source the venv
+***** Linux
+#+begin_src shell
+source .venv/bin/activate
+#+end_src
+
+***** Windows
+#+begin_src shell
+.\.venv\Sripts\activate
+#+end_src
+
+
+**** then to install the dependecies, run:
+#+begin_src shell
+pip install -r requirements.txt
+#+end_src
+
+*** creating env file for the secrets:
+#+begin_src shell
+SECRET_KEY=django-insecure-r%-n+$usr!f6=!ke)nu_vsg$p-qoi9200^y2yuk@40&l(9uqbx
+DEBUG=True
+DB_NAME= #<name of database you created>
+DB_USER=postgres
+DB_PASSWORD= #<password you create>
+DB_HOST= #<host_name>
+DB_PORT= #<port>
 #+end_src
