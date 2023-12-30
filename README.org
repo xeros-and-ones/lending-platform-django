@@ -146,3 +146,11 @@ there are 5 database tables:
 - =pendingoffers=:
   this table works as a caching system for loans pending offers.
   it's automatically populated with every offer made until the offer's status changes to "Accepted"
+* Tests:
+django has a builtin unittesting module based on python's own unittest.
+So to run tests, simply run:
+#+begin_src shell
+python manage.py test api_loans
+#+end_src
+
+optionally, you could add ~--verbosity=2~ flag to see verbose info about what's happening
