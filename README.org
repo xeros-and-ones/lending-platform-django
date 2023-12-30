@@ -131,17 +131,17 @@ a mock endpoint to simulate the full payment process over the course of the loan
 * database schema:
 there are 5 database tables:
 - =borrowers=:
-  this holds the created borrowers through ~http://localhost:8000/api/borrower/create~
+  this holds the created borrowers through ~/api/borrower/create~
 
 - =investors=:
-  this holds the created investors through ~http://localhost:8000/api/investor/create~
+  this holds the created investors through ~/api/investor/create~
   - balance is added manually through the endpoint
 
 - =loan=:
-  this holds the loan objects created through ~http://localhost:8000/api/borrower/loan~
+  this holds the loan objects created through ~/api/borrower/loan~
 
 - =offer=:
-  this holds the offers made by investors through ~http://localhost:8000/api/investor/offer~
+  this holds the offers made by investors through ~/api/investor/offer~
 
 - =pendingoffers=:
   this table works as a caching system for loans pending offers.
