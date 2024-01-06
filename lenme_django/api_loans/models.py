@@ -1,6 +1,6 @@
-from django.db import models, transaction
 from api_borrowers.models import Borrower
 from api_investors.models import Investor
+from django.db import models, transaction
 
 
 class Loan(models.Model):
@@ -43,9 +43,7 @@ class Offer(models.Model):
     investor = models.ForeignKey(
         Investor, on_delete=models.CASCADE, db_index=True, blank=True, null=True
     )
-    loan = models.ForeignKey(
-        Loan, on_delete=models.CASCADE, db_index=True, blank=True, null=True
-    )
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, db_index=True, blank=True, null=True)
     interest_rate = models.FloatField(null=False, default=15)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
 
