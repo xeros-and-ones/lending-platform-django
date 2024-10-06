@@ -6,6 +6,10 @@
 a Django REST project, a peer-to-peer lending platform.
 The project facilitates the loan application and approval process, including the management of loan funding and repayment
 
+
+
+
+
 * Use Case:
 One of the borrowers has submitted a loan request for $5,000 to be repaid over 6 months. They have received an offer from one of the lenders on the platform with a 15% Annual Interest Rate. Additionally, a $3.75 fee will be added to the total loan amount to be paid by the lender.
 
